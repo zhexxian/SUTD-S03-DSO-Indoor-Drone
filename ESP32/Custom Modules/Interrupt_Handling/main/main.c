@@ -1,11 +1,19 @@
-#include "freertos/FreeRTOS.h"
-#include "esp_wifi.h"
-#include "esp_system.h"
-#include "esp_event.h"
-#include "esp_event_loop.h"
-#include "nvs_flash.h"
-#include "driver/gpio.h"
+/*
+ * Test interrupt handling on a GPIO.
+ * In this fragment we watch for a change on the input signal
+ * of GPIO 25.  When it goes high, an interrupt is raised which
+ * adds a message to a queue which causes a task that is blocking
+ * on the queue to wake up and process the interrupt.
+ */
+
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
+#include <freertos/task.h>
+#include <driver/gpio.h>
 #include <esp_log.h>
+#include "esp_system.h"
+#include "sdkconfig.h"
+
 
 static char tag[] = "test_intr"; 
 static QueueHandle_t q1; 
@@ -17,7 +25,7 @@ static void handler(void *args) {
 	xQueueSendToBackFromISR(q1, &gpio, NULL); 
 } 
 
-void test1_task() {   
+void test1_task(void *ignore) {   
 	ESP_LOGD(tag, ">> test1_task");   
 	gpio_num_t gpio;   
 	q1 = xQueueCreate(10, sizeof(gpio_num_t));      
@@ -42,8 +50,7 @@ void test1_task() {
 
 void app_main(void)
 {
-    nvs_flash_init();
-
-	test1_task();
+	nvs_flash_init();
+    	xTaskCreate(&test1_task, "test1_task", 2048, NULL, 5, NULL);
 }
 
