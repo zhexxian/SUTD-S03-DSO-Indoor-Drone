@@ -37,6 +37,7 @@
 #include "eskylink.h"
 #include "uart_syslink.h"
 #include "radiolink.h"
+#include "wifilink.h"
 #include "nrf24link.h"
 #include "usblink.h"
 #include "platformservice.h"
