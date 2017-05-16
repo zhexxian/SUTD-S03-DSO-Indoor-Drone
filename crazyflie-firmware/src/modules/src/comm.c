@@ -50,6 +50,9 @@ void commInit(void)
 {
   if (isInit)
     return;
+// Add wifi init
+wifilinkInit();
+
 #ifdef PLATFORM_CF1
   #ifdef USE_ESKYLINK
     eskylinkInit();
