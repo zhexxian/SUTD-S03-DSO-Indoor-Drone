@@ -65,6 +65,7 @@ void commInit(void)
   // crtpInit();
   // consoleInit();
 
+/* These are temporarily disabled to test UART-WiFi link
 #ifdef USE_RADIOLINK_CRTP
   crtpSetLink(radiolinkGetLink());
 #elif defined(USE_ESKYLINK)
@@ -72,6 +73,9 @@ void commInit(void)
 #else
   crtpSetLink(nrf24linkGetLink());
 #endif
+*/
+
+  crtpSetLink(wifilinkGetLink());
 
   crtpserviceInit();
 #ifdef PLATFORM_CF2
