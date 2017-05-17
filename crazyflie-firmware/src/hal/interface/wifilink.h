@@ -11,9 +11,19 @@
 #include <stdbool.h>
 #include "syslink.h"
 #include "crtp.h"
+#include "eprintf.h"
 
+#define UART_TYPE       USART3
+#define UART_PERIF      RCC_APB1Periph_USART3
 
-//#define SYSLINK_MTU 32
+#define UART_DMA_IRQ    DMA1_Channel2_IRQn
+#define UART_DMA_IT_TC  DMA1_IT_TC2
+#define UART_DMA_CH     DMA1_Channel2
+
+#define UART_GPIO_PERIF RCC_APB2Periph_GPIOB
+#define UART_GPIO_PORT  GPIOB
+#define UART_GPIO_TX    GPIO_Pin_10
+#define UART_GPIO_RX    GPIO_Pin_11
 
 #define CRTP_START_BYTE  0xAA
 #define SYSLINK_START_BYTE1 0xBC
