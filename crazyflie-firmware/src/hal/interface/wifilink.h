@@ -10,13 +10,17 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "syslink.h"
+#include "crtp.h"
+
+
+//#define SYSLINK_MTU 32
+
+#define CRTP_START_BYTE  0xAA
+#define SYSLINK_START_BYTE1 0xBC
+#define SYSLINK_START_BYTE2 0xCF
 
 void wifilinkInit(void);
 bool wifilinkTest(void);
-void wifilinkSetChannel(uint8_t channel);
-void wifilinkSetDatarate(uint8_t datarate);
-void wifilinkSetAddress(uint64_t address);
-void wifilinkSyslinkDispatch(SyslinkPacket *slp);
 struct crtpLinkOperations * wifilinkGetLink();
 
 

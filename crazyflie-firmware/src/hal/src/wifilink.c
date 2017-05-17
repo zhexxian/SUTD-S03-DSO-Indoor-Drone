@@ -33,6 +33,7 @@
 #define WIFILINK_TX_QUEUE_SIZE (1)
 
 static xQueueHandle crtpPacketDelivery;
+static uint8_t sendBuffer[64];
 
 static bool isInit;
 
@@ -54,7 +55,7 @@ void wifilinkInit(void)
     return;
 
   // Initialize the USB peripheral
-  usbInit();
+  //usbInit();
 
   crtpPacketDelivery = xQueueCreate(5, sizeof(CRTPPacket));
   DEBUG_QUEUE_MONITOR_REGISTER(crtpPacketDelivery);
@@ -78,7 +79,7 @@ static int wifilinkReceiveCRTPPacket(CRTPPacket *p)
 
 static int wifilinkSendCRTPPacket(CRTPPacket *p)
 {
-  int dataSize;
+  //int dataSize;
 
   ASSERT(p->size < SYSLINK_MTU);
 
@@ -88,12 +89,14 @@ static int wifilinkSendCRTPPacket(CRTPPacket *p)
   {
     memcpy(&sendBuffer[1], p->data, p->size);
   }
-  dataSize = p->size + 1;
+  //dataSize = p->size + 1;
 
 
   ledseqRun(LINK_DOWN_LED, seq_linkup);
 
-  return usbSendData(dataSize, sendBuffer);
+
+  //return usbSendData(dataSize, sendBuffer);
+  return false;
   /*
   static SyslinkPacket slp;
 
@@ -121,7 +124,7 @@ static int wifilinkSetEnable(bool enable)
 
 bool wifilinkTest(void)
 {
-  return syslinkTest();
+  return isInit;
 }
 
 struct crtpLinkOperations * wifilinkGetLink()
