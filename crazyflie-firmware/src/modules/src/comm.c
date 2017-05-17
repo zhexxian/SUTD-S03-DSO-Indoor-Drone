@@ -38,6 +38,7 @@
 #include "uart_syslink.h"
 #include "radiolink.h"
 #include "wifilink.h"
+#include "uart2.h"
 #include "nrf24link.h"
 #include "usblink.h"
 #include "platformservice.h"
@@ -50,6 +51,8 @@ void commInit(void)
 {
   if (isInit)
     return;
+// Add uart2 init
+uart2Init(57600);
 // Add wifi init
 wifilinkInit();
 
