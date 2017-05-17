@@ -86,7 +86,7 @@ void uart2Init(const uint32_t baudrate)
 
   uart2queue = xQueueCreate(64, sizeof(uint8_t));
 
-  USART_ITConfig(UART1_TYPE, USART_IT_RXNE, ENABLE);
+  USART_ITConfig(UART2_TYPE, USART_IT_RXNE, ENABLE);
 
   //Enable UART
   USART_Cmd(UART2_TYPE, ENABLE);
@@ -103,7 +103,7 @@ bool uart2Test(void)
 
 bool uart2GetDataWithTimout(uint8_t *c)
 {
-  if (xQueueReceive(uart2queue, c, UART1_DATA_TIMEOUT_TICKS) == pdTRUE)
+  if (xQueueReceive(uart2queue, c, UART2_DATA_TIMEOUT_TICKS) == pdTRUE)
   {
     return true;
   }
@@ -136,17 +136,5 @@ int uart2Putchar(int ch)
 void uart2Getchar(char * ch)
 {
   xQueueReceive(uart2queue, ch, portMAX_DELAY);
-}
-
-void __attribute__((used)) USART3_IRQHandler(void)
-{
-  uint8_t rxData;
-  portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
-
-  if (USART_GetITStatus(UART2_TYPE, USART_IT_RXNE))
-  {
-    rxData = USART_ReceiveData(UART2_TYPE) & 0x00FF;
-    xQueueSendFromISR(uart2queue, &rxData, &xHigherPriorityTaskWoken);
-  }
 }
 
