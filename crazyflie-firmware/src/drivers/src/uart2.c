@@ -138,3 +138,14 @@ void uart2Getchar(char * ch)
   xQueueReceive(uart2queue, ch, portMAX_DELAY);
 }
 
+void __attribute__((used)) USART2_IRQHandler(void)
+{
+  uint8_t rxData;
+  portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+
+  if (USART_GetITStatus(UART2_TYPE, USART_IT_RXNE))
+  {
+    rxData = USART_ReceiveData(UART2_TYPE) & 0x00FF;
+    xQueueSendFromISR(uart2queue, &rxData, &xHigherPriorityTaskWoken);
+  }
+}
