@@ -19,6 +19,7 @@
 #include "config.h"
 #include "wifilink.h"
 #include "syslink.h"
+#include "uart1.h"
 #include "crtp.h"
 #include "configblock.h"
 #include "log.h"
@@ -79,7 +80,7 @@ static int wifilinkReceiveCRTPPacket(CRTPPacket *p)
 
 static int wifilinkSendCRTPPacket(CRTPPacket *p)
 {
-  //int dataSize;
+  int dataSize;
 
   ASSERT(p->size < SYSLINK_MTU);
 
@@ -89,14 +90,17 @@ static int wifilinkSendCRTPPacket(CRTPPacket *p)
   {
     memcpy(&sendBuffer[1], p->data, p->size);
   }
-  //dataSize = p->size + 1;
+
+  dataSize = p->size + 1;
 
 
   ledseqRun(LINK_DOWN_LED, seq_linkup);
 
 
-  //return usbSendData(dataSize, sendBuffer);
-  return false;
+  uart1SendData(dataSize, sendBuffer);
+
+  return 0;    
+  
   /*
   static SyslinkPacket slp;
 
