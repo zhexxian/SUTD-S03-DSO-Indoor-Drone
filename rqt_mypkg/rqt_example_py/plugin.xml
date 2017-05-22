@@ -1,0 +1,20 @@
+<library path="src">
+  <class name="My Plugin" type="rqt_mypkg.my_module.Param" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      View parameters for drones and also an option to edit them.
+    </description>
+    <qtgui>
+      <!-- optional grouping...
+      <group>
+        <label>Group</label>
+      </group>
+      <group>
+        <label>Subgroup</label>
+      </group>
+      -->
+      <label>Parameters Tab</label>
+      <icon type="theme">system-help</icon>
+      <statustip>View parameters for drones.</statustip>
+    </qtgui>
+  </class>
+</library>
