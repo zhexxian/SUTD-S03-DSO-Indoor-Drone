@@ -10,6 +10,13 @@ from python_qt_binding.QtWidgets import QWidget, QTreeWidgetItem, QSlider
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+#  put all the movements in the move.py python script? now i importing Forwardx from move.py
+from move import Forwardx
+
+UPDATE_RATE = 10
+# made formationList global so can have executeCommands function use it
+formationList = []
+
 class Formations(Plugin):
 
     def __init__(self, context):
@@ -59,29 +66,31 @@ class Formations(Plugin):
         ### INCOMPLETE ###
 
         ### For RVIZ ###
-        worldFrame = rospy.get_param("~worldFrame", "/world")
-        name = "goal"
-        coordinate = [0,0,0]
-        rate = rospy.Rate(30) # reference from launch file args
-        msg = PoseStamped()
-        msg.header.seq = 0
-        msg.header.stamp = rospy.Time.now()
-        msg.header.frame_id = worldFrame
-        msg.pose.position.x = 0
-        msg.pose.position.y = 0
-        msg.pose.position.z = 0
-        quaternion = tf.transformations.quaternion_from_euler(0, 0, 0)
-        msg.pose.orientation.x = quaternion[0]
-        msg.pose.orientation.y = quaternion[1]
-        msg.pose.orientation.z = quaternion[2]
-        msg.pose.orientation.w = quaternion[3]
+        self.worldFrame = rospy.get_param("~worldFrame", "/world")
+        self.name = "goal"
+        self.coordinate = [0,0,0]
+        # rate = rospy.Rate(30) # reference from launch file args
+        self.msg = PoseStamped()
+        self.msg.header.seq = 0
+        self.msg.header.stamp = rospy.Time.now()
+        self.msg.header.frame_id = self.worldFrame
+        self.msg.pose.position.x = 0
+        self.msg.pose.position.y = 0
+        self.msg.pose.position.z = 0
+        self.quaternion = tf.transformations.quaternion_from_euler(0, 0, 0)
+        self.msg.pose.orientation.x = self.quaternion[0]
+        self.msg.pose.orientation.y = self.quaternion[1]
+        self.msg.pose.orientation.z = self.quaternion[2]
+        self.msg.pose.orientation.w = self.quaternion[3]
         ##################
 
         self._widget.horizontalSlider.valueChanged[int].connect(self.lineMove)
         self._widget.generateButton.clicked.connect(self.generateClicked)
-        self._widget.playButton.clicked.connect(lambda: self.playClicked(msg, name)) # ref: http://eli.thegreenplace.net/2011/04/25/passing-extra-arguments-to-pyqt-slot
+        self._widget.playButton.setCheckable(True)
+        # set playButton to a toggle button for play/pause functionality
+        self._widget.playButton.toggled.connect(self.playClicked) # ref: http://eli.thegreenplace.net/2011/04/25/passing-extra-arguments-to-pyqt-slot
 
-    ### INCOMPLETE ###
+    ### TODO: INCOMPLETE ###
     def lineMove(self, valueOfSlider):
         #if valueOfSlider 
         vline = QFrame()
@@ -90,7 +99,8 @@ class Formations(Plugin):
         self.add_widget(vline, 1, 0, 1, 2)
 
     def generateClicked(self):
-        formationList = []
+        del formationList[:] # everytime generateClicked is executed, clear the current formationList to generate a new one (previously it saves the previous entries so the list kept growing)
+
         rowList = []
         maxRows = self._widget.tableWidget.rowCount()
         maxCols = self._widget.tableWidget.columnCount()
@@ -111,42 +121,51 @@ class Formations(Plugin):
             del rowList[:]
         print (formationList)
 
-    def Forwardx(self, curr_x, curr_y, curr_z):
-        return (curr_x+0.1, curr_y, curr_z)
+    # TODO: take in commands from formationList and execute them (right now it is hardcoded to only execute one Forwardx command)
+    def executeCommands(self, event):
+        print ('executing commands!')
+        numDrones = len(formationList)
+        for droneForm in formationList:
+            for formation in droneForm:
+                if formation != '': 
+                    print (formation)
+                    # TODO: process commands for individual drones here
 
-    def playClicked(self, msg, name):
-        # TODO: change to some kind of toggle to show that play button was clicked
-        pub = rospy.Publisher(name, PoseStamped, queue_size=1)
-        coordinate = self.Forwardx(msg.pose.position.x, msg.pose.position.y, msg.pose.position.z)
-        msg.pose.position.x = coordinate[0]
-        msg.pose.position.y = coordinate[1]
-        msg.pose.position.z = coordinate[2]
-        pub.publish(msg)
+        pub = rospy.Publisher(self.name, PoseStamped, queue_size=1)
+        coordinate = Forwardx(self.msg.pose.position.x, self.msg.pose.position.y, self.msg.pose.position.z)
+        self.msg.pose.position.x = coordinate[0]
+        self.msg.pose.position.y = coordinate[1]
+        self.msg.pose.position.z = coordinate[2]
+        pub.publish(self.msg)
 
-        # Send position setpoints 30 times per seconds
-        self.timer = rospy.Timer(rospy.Duration(1.0/UPDATE_RATE),
-                                 self.send_setpoint)
-        # call shutdown() to stop the timer from firing
+    def playClicked(self):
+        if (self._widget.playButton.isChecked()):
+            print ('playButton checked')
+            # Send position setpoints 10 times per second
+            self.timer = rospy.Timer(rospy.Duration(1.0/UPDATE_RATE), self.executeCommands) # got rospy.Timer to work inside the rqt plugin, after verifying that rospy.Timer and shutdown() on it works but in a separate python script
 
-        # # need to modify this to escape the loop sometimes so that the GUI can be refreshed
-        # while not rospy.is_shutdown():
-        #     #print ("wtf")
-        #     # modify to time segments instead of infinitely moving
-        #     # need
-        #     msg.header.seq += 1
+        else:
+            print ('playButton unchecked')
+            # call shutdown() to stop the timer from firings
+            self.timer.shutdown()
 
-        #     if msg.header.seq % 2 == 0:
-        #         coordinate = (msg.pose.position.x+0.01, msg.pose.position.y, msg.pose.position.z)
-        #         msg.pose.position.x = coordinate[0]
-        #         msg.pose.position.y = coordinate[1]
-        #         msg.pose.position.z = coordinate[2]
-        #     msg.header.seq = 0
-        #     msg.header.stamp = rospy.Time.now()
-        #     pub.publish(msg)
-        #     rate.sleep()
+            # TODO: delete this?
+            # # need to modify this to escape the loop sometimes so that the GUI can be refreshed
+            # while not rospy.is_shutdown():
+            #     #print ("wtf")
+            #     # modify to time segments instead of infinitely moving
+            #     # need
+            #     msg.header.seq += 1
 
-
-
+            #     if msg.header.seq % 2 == 0:
+            #         coordinate = (msg.pose.position.x+0.01, msg.pose.position.y, msg.pose.position.z)
+            #         msg.pose.position.x = coordinate[0]
+            #         msg.pose.position.y = coordinate[1]
+            #         msg.pose.position.z = coordinate[2]
+            #     msg.header.seq = 0
+            #     msg.header.stamp = rospy.Time.now()
+            #     pub.publish(msg)
+            #     rate.sleep()
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here
