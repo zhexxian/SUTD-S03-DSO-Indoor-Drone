@@ -48,51 +48,17 @@ class Squadron(Plugin):
             self._widget.setWindowTitle(self._widget.windowTitle() + (' (%d)' % context.serial_number()))
         # Add widget to the user interface
         context.add_widget(self._widget)
-        
-        self._widget.toggle1.setCheckable(True)
-        self._widget.toggle2.setCheckable(True)
-        self._widget.toggle3.setCheckable(True)
-        self._widget.toggle1.toggled.connect(lambda:self.btnstate(self._widget.toggle1))
-        self._widget.toggle2.toggled.connect(lambda:self.btnstate(self._widget.toggle2))
-        self._widget.toggle3.toggled.connect(lambda:self.btnstate(self._widget.toggle3))
 
         self._widget.saveConfig.clicked.connect(self.saveSquadConfig)
         self._widget.delSquad.clicked.connect(self.delSelectedSquad)
-        self._widget.createFile.clicked.connect(self.generateFile)
-
-    def btnstate(self, b):
-        if b == self._widget.toggle1:
-            if b.isChecked() == True:
-                b.setText("Toggle +ve")
-                self._widget.xcoord.setInputMask('-0.0;')
-            else:
-                b.setText("Toggle -ve")
-                self._widget.xcoord.setInputMask('0.0;')
-        if b == self._widget.toggle2:
-            if b.isChecked() == True:
-                b.setText("Toggle +ve")
-                self._widget.ycoord.setInputMask('-0.0;')
-            else:
-                b.setText("Toggle -ve")
-                self._widget.ycoord.setInputMask('0.0;')
-        if b == self._widget.toggle3:
-            if b.isChecked() == True:
-                b.setText("Toggle +ve")
-                self._widget.zcoord.setInputMask('-0.0;')
-            else:
-                b.setText("Toggle -ve")
-                self._widget.zcoord.setInputMask('0.0;')       
+        self._widget.createFile.clicked.connect(self.generateFile)   
 
     def saveSquadConfig(self):
         self.leaderName = str(self._widget.selectLeader.currentText())
         # self.leaderNum = str(self._widget.selectLeader.currentText())[-1]
         print ('leader name: ' + self.leaderName)
-        self.leaderX = float(self._widget.xcoord.text())
-        self.leaderY = float(self._widget.ycoord.text())
-        self.leaderZ = float(self._widget.zcoord.text())
-        print ('leader coordinates: ' + str(self.leaderX), str(self.leaderY), str(self.leaderZ))
 
-        rootItem = self.leaderName+';('+str(self.leaderX)+','+str(self.leaderY)+','+str(self.leaderZ)+')'
+        rootItem = self.leaderName
         squadItemRoot = QTreeWidgetItem([rootItem])
 
         model = self._widget.relativeTable.model()
@@ -129,7 +95,6 @@ class Squadron(Plugin):
         for item in self._widget.squadTree.selectedItems():
             (item.parent() or root).removeChild(item)
 
-    # TODO: decide on a file format and write the squadron contents to it
     def generateFile(self):
         fileList = []
         squadList = []
@@ -138,22 +103,18 @@ class Squadron(Plugin):
         child_count = root.childCount()
         for i in range(child_count):
             entry = root.child(i)
-            leader = entry.text(0).encode("ascii").split(';')
-            ldrCoords = leader[1].split(',')
-            ldrNum = leader[0][-1]
-            ldrX = ldrCoords[0][1:]
-            ldrY = ldrCoords[1]
-            ldrZ = ldrCoords[2][:-1]
+            leader = entry.text(0).encode("ascii")
+            ldrNum = leader[-1]
             print ('leader: ' + str(leader))
-            squadList.append([ldrNum, ldrX, ldrY, ldrZ])
+            squadList.append([ldrNum])
             child_count2 = entry.childCount()
             for j in range(child_count2):
                 otherDrone = root.child(i).child(j).text(0).encode("ascii").split(';')
                 droneCoords = otherDrone[1].split(',')
                 droneNum = otherDrone[0][-1]
                 droneX = droneCoords[0][1:]
-                droneY = ldrCoords[1]
-                droneZ = ldrCoords[2][:-1]
+                droneY = droneCoords[1]
+                droneZ = droneCoords[2][:-1]
                 print ('follower: ' + str(otherDrone))
                 squadList.append([droneNum, droneX, droneY, droneZ])
             fileList.append(squadList)
