@@ -6,189 +6,308 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>885</width>
-    <height>295</height>
+    <width>921</width>
+    <height>434</height>
    </rect>
+  </property>
+  <property name="acceptDrops">
+   <bool>false</bool>
   </property>
   <property name="windowTitle">
    <string>Formations</string>
   </property>
-  <layout class="QFormLayout" name="formLayout">
-   <property name="fieldGrowthPolicy">
-    <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+  <widget class="QSlider" name="horizontalSlider">
+   <property name="geometry">
+    <rect>
+     <x>464</x>
+     <y>9</y>
+     <width>441</width>
+     <height>26</height>
+    </rect>
    </property>
-   <item row="1" column="1">
-    <widget class="QSlider" name="horizontalSlider">
-     <property name="minimum">
-      <number>350</number>
-     </property>
-     <property name="maximum">
-      <number>850</number>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="tickPosition">
-      <enum>QSlider::TicksBothSides</enum>
-     </property>
-     <property name="tickInterval">
-      <number>0</number>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QTreeWidget" name="FormationTree">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="dragEnabled">
-      <bool>true</bool>
-     </property>
-     <property name="dragDropMode">
-      <enum>QAbstractItemView::DragOnly</enum>
-     </property>
-     <property name="uniformRowHeights">
-      <bool>false</bool>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-     <attribute name="headerVisible">
-      <bool>true</bool>
-     </attribute>
-     <attribute name="headerCascadingSectionResizes">
-      <bool>false</bool>
-     </attribute>
-     <attribute name="headerDefaultSectionSize">
-      <number>300</number>
-     </attribute>
-     <attribute name="headerShowSortIndicator" stdset="0">
-      <bool>true</bool>
-     </attribute>
-     <attribute name="headerStretchLastSection">
-      <bool>true</bool>
-     </attribute>
-     <column>
-      <property name="text">
-       <string>Type</string>
+   <property name="minimum">
+    <number>350</number>
+   </property>
+   <property name="maximum">
+    <number>850</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="tickPosition">
+    <enum>QSlider::TicksBothSides</enum>
+   </property>
+   <property name="tickInterval">
+    <number>0</number>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="tableWidget">
+   <property name="geometry">
+    <rect>
+     <x>464</x>
+     <y>41</y>
+     <width>448</width>
+     <height>189</height>
+    </rect>
+   </property>
+   <property name="dragEnabled">
+    <bool>true</bool>
+   </property>
+   <property name="dragDropOverwriteMode">
+    <bool>false</bool>
+   </property>
+   <property name="dragDropMode">
+    <enum>QAbstractItemView::DropOnly</enum>
+   </property>
+   <column>
+    <property name="text">
+     <string>1</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>2</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>3</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>4</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>5</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>6</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>464</x>
+     <y>236</y>
+     <width>87</width>
+     <height>60</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QPushButton" name="generateButton">
+      <property name="enabled">
+       <bool>true</bool>
       </property>
-     </column>
-     <item>
-      <property name="text">
-       <string>Transition</string>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
       </property>
+      <property name="text">
+       <string>Generate</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="playButton">
+      <property name="text">
+       <string>Play</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>391</width>
+     <height>291</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <widget class="QTreeWidget" name="FormationTree">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="dragEnabled">
+       <bool>true</bool>
+      </property>
+      <property name="dragDropMode">
+       <enum>QAbstractItemView::DragOnly</enum>
+      </property>
+      <property name="uniformRowHeights">
+       <bool>false</bool>
+      </property>
+      <property name="sortingEnabled">
+       <bool>true</bool>
+      </property>
+      <attribute name="headerVisible">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="headerCascadingSectionResizes">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="headerDefaultSectionSize">
+       <number>300</number>
+      </attribute>
+      <attribute name="headerShowSortIndicator" stdset="0">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="headerStretchLastSection">
+       <bool>true</bool>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>Type</string>
+       </property>
+      </column>
       <item>
        <property name="text">
-        <string>Transition 1</string>
+        <string>Transition</string>
        </property>
+       <item>
+        <property name="text">
+         <string>Transition 1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Take Off</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Land</string>
+        </property>
+       </item>
       </item>
       <item>
        <property name="text">
-        <string>Take Off</string>
+        <string>Squadron 2</string>
        </property>
+       <item>
+        <property name="text">
+         <string>Squad Change</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Launch to Initial Pose</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Formation 2</string>
+        </property>
+       </item>
       </item>
       <item>
        <property name="text">
-        <string>Land</string>
+        <string>Squadron 1</string>
        </property>
+       <item>
+        <property name="text">
+         <string>Squad Change</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Launch to Initial Pose</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Formation 1</string>
+        </property>
+       </item>
       </item>
-     </item>
-     <item>
-      <property name="text">
-       <string>Formation</string>
-      </property>
       <item>
        <property name="text">
-        <string>Square</string>
+        <string>Formation</string>
        </property>
+       <item>
+        <property name="text">
+         <string>Square</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Rectangle</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Circle</string>
+        </property>
+       </item>
       </item>
       <item>
        <property name="text">
-        <string>Rectangle</string>
+        <string>A</string>
        </property>
+       <item>
+        <property name="text">
+         <string>forward1</string>
+        </property>
+       </item>
       </item>
-      <item>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTableWidget" name="tableWidget_2">
+      <property name="dragEnabled">
+       <bool>true</bool>
+      </property>
+      <property name="dragDropOverwriteMode">
+       <bool>false</bool>
+      </property>
+      <property name="dragDropMode">
+       <enum>QAbstractItemView::DropOnly</enum>
+      </property>
+      <property name="showGrid">
+       <bool>true</bool>
+      </property>
+      <attribute name="verticalHeaderShowSortIndicator" stdset="0">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderStretchLastSection">
+       <bool>false</bool>
+      </attribute>
+      <column>
        <property name="text">
-        <string>Circle</string>
+        <string>x</string>
        </property>
-      </item>
-     </item>
-     <item>
-      <property name="text">
-       <string>A</string>
-      </property>
-      <item>
+      </column>
+      <column>
        <property name="text">
-        <string>forward1</string>
+        <string>y</string>
        </property>
-      </item>
-     </item>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QTableWidget" name="tableWidget">
-     <property name="dragEnabled">
-      <bool>true</bool>
-     </property>
-     <property name="dragDropOverwriteMode">
-      <bool>false</bool>
-     </property>
-     <property name="dragDropMode">
-      <enum>QAbstractItemView::DropOnly</enum>
-     </property>
-     <column>
-      <property name="text">
-       <string>1</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>2</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>3</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>4</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>5</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>6</string>
-      </property>
-     </column>
-    </widget>
-   </item>
-   <item row="6" column="1">
-    <widget class="QPushButton" name="playButton">
-     <property name="text">
-      <string>Play</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QPushButton" name="generateButton">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
-     <property name="text">
-      <string>Generate</string>
-     </property>
-    </widget>
-   </item>
-  </layout>
+      </column>
+      <column>
+       <property name="text">
+        <string>z</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>time</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <resources/>
  <connections/>

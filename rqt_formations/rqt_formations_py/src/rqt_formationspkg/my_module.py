@@ -2,6 +2,7 @@ import os
 import rospkg
 import rospy
 import tf
+import pyqtgraph as pg
 from geometry_msgs.msg import PoseStamped
 
 from qt_gui.plugin import Plugin
@@ -9,11 +10,13 @@ from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget, QTreeWidgetItem, QSlider
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4 import QtGui, QtCore
+
 
 #  put all the movements in the move.py python script? now i importing Forwardx from move.py
 from move import Forwardx
 
-UPDATE_RATE = 10
+UPDATE_RATE = 30
 # made formationList global so can have executeCommands function use it
 formationList = []
 
@@ -41,7 +44,7 @@ class Formations(Plugin):
         self._widget = QWidget()
         # Get path to UI file which is a sibling of this file
         # in this example the .ui and .py file are in the same folder
-        ui_file = os.path.join(rp.get_path('rqt_formationspkg'), 'resource', 'Formations.ui')
+        ui_file = os.path.join(rp.get_path('rqt_formationspkg'), 'resource', 'Formations3.ui')
         # Extend the widget with all attributes and children from UI file
         loadUi(ui_file, self._widget)
         # Give QObjects reasonable names
@@ -88,7 +91,132 @@ class Formations(Plugin):
         self._widget.generateButton.clicked.connect(self.generateClicked)
         self._widget.playButton.setCheckable(True)
         # set playButton to a toggle button for play/pause functionality
-        self._widget.playButton.toggled.connect(self.playClicked) # ref: http://eli.thegreenplace.net/2011/04/25/passing-extra-arguments-to-pyqt-slot
+        self._widget.playButton.toggled.connect(self.playClicked) 
+        # ref: http://eli.thegreenplace.net/2011/04/25/passing-extra-arguments-to-pyqt-slot
+        # button1.clicked.connect(lambda: self.on_button(1))
+        # squadron table should show other members' relative positions to the leader
+        #squadronMembersCount = 2 # hardcoded for now but it should be fetching the members count from squadron creator
+        self._widget.FormationTree.itemClicked.connect(self.handleItemClicked)
+        self._widget.tableWidget.viewport().installEventFilter(self)
+        self._widget.squadronTableWidget.itemChanged.connect(self.handleSquadronItemChanged)
+
+        
+
+        # initiate relative positions of squadron members (incoming list of squadron members and their relative pos to squadron leader)
+
+
+    # https://stackoverflow.com/questions/25925765/pyqt-get-the-current-qtreewidget-item
+    # https://stackoverflow.com/questions/8323537/qt-after-drop-event  viewport() was the problem, previously did not use viewport() and drop event was not firing
+    # 
+    def eventFilter(self, object, event):
+        if (object is self._widget.tableWidget.viewport()):
+            if (event.type() == QtCore.QEvent.DragEnter):
+                getSelected = self._widget.FormationTree.selectedItems()
+                #print getSelected[0].text(0)
+                if getSelected[0].text(0):
+                    event.accept()   # must accept the dragEnterEvent or else the dropEvent can't occur !!!
+                else:
+                    event.ignore()
+            elif (event.type() == QtCore.QEvent.Drop):
+                getSelected = self._widget.FormationTree.selectedItems()
+                getTimeSpan = float(self._widget.squadronTableWidget.item(0, 3).text()) # 4th cell is the time
+                print "time span is: " + str(getTimeSpan)
+                # get the row, col https://stackoverflow.com/questions/10524178/qtablewidget-drag-and-drop-a-button-into-a-cell-in-the-qtablewidget
+                position = event.pos()
+                # print position
+                row = self._widget.tableWidget.rowAt(position.y())
+                column = self._widget.tableWidget.columnAt(position.x())
+                self._widget.tableWidget.setSpan(row, column, 1, getTimeSpan) # https://stackoverflow.com/questions/28017657/how-to-remove-span-from-qtablewidget-in-pyqt4-python-2-7
+                                                                              # QTableView.setSpan (self, int row, int column, int rowSpan, int columnSpan)
+
+                # get row that has things being added
+                # retrieve the items in the row
+                # shift the items by getTimeSpan
+                # need to set the span of the shifted rows <-- how to check the span?
+                # insert drop by shifting data in cells by getTimeSpan
+                print getSelected[0].text(0)
+
+            # insert a wheel event to zoom the grid
+            elif (event.type() == QtCore.QEvent.Wheel):
+                horizontalSectionSize = self._widget.tableWidget.horizontalHeader().defaultSectionSize()
+                verticalSectionSize = self._widget.tableWidget.verticalHeader().defaultSectionSize()
+                if event.delta() > 0:
+                    horizontalSectionSize += 6
+                    verticalSectionSize += 2
+                    self._widget.tableWidget.horizontalHeader().setDefaultSectionSize(horizontalSectionSize)
+                    self._widget.tableWidget.verticalHeader().setDefaultSectionSize(verticalSectionSize)
+                    self._widget.tableWidget.setColumnWidth(0, 100)
+                    self._widget.tableWidget.setRowHeight(0, 100)
+                    self._widget.tableWidget.setColumnWidth(0, horizontalSectionSize)
+                    self._widget.tableWidget.setRowHeight(0, verticalSectionSize)
+                    #self._widget.tableWidget.verticalHeader().setDefaultSectionSize(verticalSectionSize)
+                    
+                if event.delta() < 0 and verticalSectionSize > 3:
+                    horizontalSectionSize -= 6
+                    verticalSectionSize -= 2
+                    self._widget.tableWidget.horizontalHeader().setDefaultSectionSize(horizontalSectionSize)
+                    self._widget.tableWidget.verticalHeader().setDefaultSectionSize(verticalSectionSize)
+                    self._widget.tableWidget.setColumnWidth(0, 100)
+                    self._widget.tableWidget.setRowHeight(0, 100)
+                    self._widget.tableWidget.setColumnWidth(0, horizontalSectionSize)
+                    self._widget.tableWidget.setRowHeight(0, verticalSectionSize)
+                 # tableView->horizontalHeader()->setFixedHeight(100);
+
+                 # setMinimumHeight() and setMaximumHeight()?
+
+
+
+            return False # lets the event continue to the edit
+        return False
+
+    # Fixed detecting own changes created by function creating infinite event loops https://stackoverflow.com/questions/29420007/detect-item-changed-qttablewidget
+    # TODO: Detect how many members are in a squadron (from squadron maker) and edit relative positions according to the file generated by squadron maker
+    def handleSquadronItemChanged(self, item):
+        # Relative member positions
+        # squadron member 2
+        self._widget.squadronTableWidget.blockSignals(True)
+        row = self._widget.squadronTableWidget.row(item)
+        # print "row: " + str(row)
+        col = self._widget.squadronTableWidget.column(item)
+        # print "col: " + str(col)
+        if row == 0: # if x  y, z for the leader has been changed, update the members
+            #try:
+                leaderPos = float(self._widget.squadronTableWidget.item(0, col).text())
+                if col != 3:
+                    member2RelativePos = 1.5
+                    member2Pos = leaderPos + member2RelativePos
+                    item = QTableWidgetItem()
+                    item.setText(str(member2Pos))
+                    item.setFlags(QtCore.Qt.ItemIsEnabled)  # make item not clickable/editable https://riverbankcomputing.com/pipermail/pyqt/2009-March/022160.html
+                    self._widget.squadronTableWidget.setItem(1, col, item)
+                elif col == 3:
+                    item = QTableWidgetItem()
+                    item.setText(str(leaderPos))
+                    item.setFlags(QtCore.Qt.ItemIsEnabled)
+                    self._widget.squadronTableWidget.setItem(1, col, item)
+            #except Exception:
+            #    pass
+        self._widget.squadronTableWidget.blockSignals(False)
+
+    def handleItemClicked(self, item):
+        # TODO:
+        # parse the squadron file which includes squadron numbers and their members and relative values
+        squadronMembersCount = 2
+        # traverse the tree to find the parent regardless of how deep the item that was selected is
+        while (item.parent() is not None):
+            item = item.parent()
+        print (item.text(0))
+        if item.text(0) == "Squadron 1":
+            self._widget.squadronTableWidget.setRowCount(squadronMembersCount)
+        elif item.text(0) == "Squadron 2":
+            self._widget.squadronTableWidget.setRowCount(squadronMembersCount)
+        elif item.text(0) == "Squadron 3":
+            self._widget.squadronTableWidget.setRowCount(squadronMembersCount)
+        elif item.text(0) == "Squadron 4":
+            self._widget.squadronTableWidget.setRowCount(squadronMembersCount)
+        else:
+            self._widget.squadronTableWidget.setRowCount(1)
+            self._widget.squadronTableWidget.clearContents()
 
     ### TODO: INCOMPLETE ###
     def lineMove(self, valueOfSlider):
@@ -98,9 +226,10 @@ class Formations(Plugin):
         vline.setFrameShadow(QFrame.Sunken)
         self.add_widget(vline, 1, 0, 1, 2)
 
+    ### Fetches a list of the formations timeline when the generate button is clicked ###
+    # TODO: Append a end tag to signify the end of the sequences of formations (for time synchronization)
     def generateClicked(self):
         del formationList[:] # everytime generateClicked is executed, clear the current formationList to generate a new one (previously it saves the previous entries so the list kept growing)
-
         rowList = []
         maxRows = self._widget.tableWidget.rowCount()
         maxCols = self._widget.tableWidget.columnCount()
@@ -138,6 +267,7 @@ class Formations(Plugin):
         self.msg.pose.position.z = coordinate[2]
         pub.publish(self.msg)
 
+    # sets the play button to become a toggle button. A timer is used to call the executeCommands function periodically to animate the formations in RVIZ
     def playClicked(self):
         if (self._widget.playButton.isChecked()):
             print ('playButton checked')
@@ -148,24 +278,6 @@ class Formations(Plugin):
             print ('playButton unchecked')
             # call shutdown() to stop the timer from firings
             self.timer.shutdown()
-
-            # TODO: delete this?
-            # # need to modify this to escape the loop sometimes so that the GUI can be refreshed
-            # while not rospy.is_shutdown():
-            #     #print ("wtf")
-            #     # modify to time segments instead of infinitely moving
-            #     # need
-            #     msg.header.seq += 1
-
-            #     if msg.header.seq % 2 == 0:
-            #         coordinate = (msg.pose.position.x+0.01, msg.pose.position.y, msg.pose.position.z)
-            #         msg.pose.position.x = coordinate[0]
-            #         msg.pose.position.y = coordinate[1]
-            #         msg.pose.position.z = coordinate[2]
-            #     msg.header.seq = 0
-            #     msg.header.stamp = rospy.Time.now()
-            #     pub.publish(msg)
-            #     rate.sleep()
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here
