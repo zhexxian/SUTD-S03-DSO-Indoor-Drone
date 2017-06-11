@@ -9,6 +9,7 @@ from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget, QTreeWidgetItem, QSlider
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4 import QtGui, QtCore
 
 class Squadron(Plugin):
     
@@ -52,10 +53,21 @@ class Squadron(Plugin):
         self._widget.saveConfig.clicked.connect(self.saveSquadConfig)
         self._widget.delSquad.clicked.connect(self.delSelectedSquad)
         self._widget.createFile.clicked.connect(self.generateFile)   
+        self._widget.delCell.clicked.connect(self.delSelectedCell)   
+        self._widget.relativeTable.viewport().installEventFilter(self)
+        self._widget.relativeTable.cellClicked.connect(self.cellClicked)
+
+    def cellClicked(self, row, column):
+        print("Row %d and Column %d was clicked" % (row, column))
+        item = self._widget.relativeTable.item(row, column)
+        self.cell = item.text()
+        print (self.cell)
+
+    def delSelectedCell(self):
+        self.cell.setText("")
 
     def saveSquadConfig(self):
         self.leaderName = str(self._widget.selectLeader.currentText())
-        # self.leaderNum = str(self._widget.selectLeader.currentText())[-1]
         print ('leader name: ' + self.leaderName)
 
         rootItem = self.leaderName
@@ -82,7 +94,7 @@ class Squadron(Plugin):
                     rowIndex = data.index(rowData)
                     # print ('row index:' + rowIndex)
                     self.droneX = indexVal[colIndex]
-                    self.droneY = indexVal[rowIndex]
+                    self.droneY = -indexVal[rowIndex]
                     print ('drone coordinates: ' + str(self.droneX), str(self.droneY))
 
                     droneItem = self.droneName+';('+str(self.droneX)+','+str(self.droneY)+',0)'
@@ -121,15 +133,43 @@ class Squadron(Plugin):
             squadList = []
         print fileList
 
-        print os.getcwd()
+        # print os.getcwd()
         os.chdir(os.path.expanduser('~'))
         os.chdir('crazyflie_ws/src/rqt_squadron/rqt_squadron_py/src/rqt_squadronpkg') # change accordingly to the name of your catkin workspace
-        print os.getcwd()
+        # print os.getcwd()
 
         squadronFile = open('squadronPlan.txt','w') 
         squadronFile.write(str(fileList))
         print('written squadron file')
         squadronFile.close() 
+
+    def eventFilter(self, object, event):
+        if (object is self._widget.relativeTable.viewport()):
+            # insert a wheel event to zoom the grid
+            if (event.type() == QtCore.QEvent.Wheel):
+                horizontalSectionSize = self._widget.relativeTable.horizontalHeader().defaultSectionSize()
+                verticalSectionSize = self._widget.relativeTable.verticalHeader().defaultSectionSize()
+                if event.delta() > 0:
+                    horizontalSectionSize += 6
+                    verticalSectionSize += 2
+                    self._widget.relativeTable.horizontalHeader().setDefaultSectionSize(horizontalSectionSize)
+                    self._widget.relativeTable.verticalHeader().setDefaultSectionSize(verticalSectionSize)
+                    self._widget.relativeTable.setColumnWidth(0, 100)
+                    self._widget.relativeTable.setRowHeight(0, 100)
+                    self._widget.relativeTable.setColumnWidth(0, horizontalSectionSize)
+                    self._widget.relativeTable.setRowHeight(0, verticalSectionSize)
+                    
+                if event.delta() < 0 and verticalSectionSize > 3:
+                    horizontalSectionSize -= 6
+                    verticalSectionSize -= 2
+                    self._widget.relativeTable.horizontalHeader().setDefaultSectionSize(horizontalSectionSize)
+                    self._widget.relativeTable.verticalHeader().setDefaultSectionSize(verticalSectionSize)
+                    self._widget.relativeTable.setColumnWidth(0, 100)
+                    self._widget.relativeTable.setRowHeight(0, 100)
+                    self._widget.relativeTable.setColumnWidth(0, horizontalSectionSize)
+                    self._widget.relativeTable.setRowHeight(0, verticalSectionSize)
+            return False # lets the event continue to the edit
+        return False
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here

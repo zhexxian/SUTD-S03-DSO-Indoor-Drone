@@ -187,6 +187,13 @@
     </layout>
    </item>
    <item>
+    <widget class="QPushButton" name="delCell">
+     <property name="text">
+      <string>Delete Selected Cell</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="label_3">
      <property name="text">
       <string>Drones to choose from:</string>
