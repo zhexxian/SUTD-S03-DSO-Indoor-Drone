@@ -25,9 +25,11 @@
  */
 #include <string.h>
 
+
 /*FreeRtos includes*/
 #include "FreeRTOS.h"
 #include "queue.h"
+
 
 /*ST includes */
 #include "stm32fxxx.h"
@@ -90,8 +92,7 @@ void uart2Init(const uint32_t baudrate)
 
   //Enable UART
   USART_Cmd(UART2_TYPE, ENABLE);
-
-  USART_ITConfig(UART2_TYPE, USART_IT_RXNE, ENABLE);
+  
   
   isInit = true;
 }
@@ -111,6 +112,7 @@ bool uart2GetDataWithTimout(uint8_t *c)
   *c = 0;
   return false;
 }
+
 
 void uart2SendData(uint32_t size, uint8_t* data)
 {

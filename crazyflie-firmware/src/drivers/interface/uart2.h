@@ -68,7 +68,7 @@ bool uart2Test(void);
  * @param[out] c  Read byte
  * @return true if data, false if timeout was reached.
  */
-bool uart2GetDataWithTimout(uint8_t *c);
+ bool uart2GetDataWithTimout(uint8_t *c);
 
 /**
  * Sends raw data using a lock. Should be used from

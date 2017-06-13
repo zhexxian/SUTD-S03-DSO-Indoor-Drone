@@ -75,6 +75,7 @@
 
 
 // Task priorities. Higher number higher priority
+#define UART_WIFI_RX_TASK_PRI   3
 #define STABILIZER_TASK_PRI     4
 #define SENSORS_TASK_PRI        4
 #define ADC_TASK_PRI            3
@@ -92,7 +93,7 @@
 #define USDWRITE_TASK_PRI       0
 
 #ifdef PLATFORM_CF2
-  #define SYSLINK_TASK_PRI        5
+  #define SYSLINK_TASK_PRI        2
   #define USBLINK_TASK_PRI        3
 #endif
 
@@ -128,6 +129,7 @@
 #define PROXIMITY_TASK_NAME     "PROXIMITY"
 #define EXTRX_TASK_NAME         "EXTRX"
 #define UART_RX_TASK_NAME       "UART"
+#define UART_WIFI_RX_TASK_NAME  "UARTWIFI"
 #define VL53_TASK_NAME          "VL53"
 #define USDLOG_TASK_NAME        "USDLOG"
 #define USDWRITE_TASK_NAME      "USDWRITE"
@@ -151,6 +153,7 @@
 #define PROXIMITY_TASK_STACKSIZE      configMINIMAL_STACK_SIZE
 #define EXTRX_TASK_STACKSIZE          configMINIMAL_STACK_SIZE
 #define UART_RX_TASK_STACKSIZE        configMINIMAL_STACK_SIZE
+#define UART_WIFI_RX_TASK_STACKSIZE   (2 * configMINIMAL_STACK_SIZE)
 #define VL53_TASK_STACKSIZE           (2 * configMINIMAL_STACK_SIZE)
 #define USDLOG_TASK_STACKSIZE         configMINIMAL_STACK_SIZE
 #define USDWRITE_TASK_STACKSIZE       (2 * configMINIMAL_STACK_SIZE)

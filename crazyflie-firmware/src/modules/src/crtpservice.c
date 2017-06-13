@@ -50,7 +50,7 @@ void crtpserviceInit(void)
 
   // Register a callback to service the Link port
   crtpRegisterPortCB(CRTP_PORT_LINK, crtpserviceHandler);
-
+  crtpInitTaskQueue(CRTP_PORT_LINK);
   isInit = true;
 }
 
@@ -59,7 +59,7 @@ bool crtpserviceTest(void)
   return isInit;
 }
 
-void crtpserviceHandler(CRTPPacket *p)
+void crtpserviceHandler(CRTPPacket* p)
 {
   switch (p->channel)
   {

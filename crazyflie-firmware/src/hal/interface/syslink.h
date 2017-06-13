@@ -60,15 +60,6 @@
 #define SYSLINK_OW_READ     0x22
 #define SYSLINK_OW_WRITE    0x23
 
-#define SYSLINK_WIFI_GROUP         0x30
-#define SYSLINK_WIFI_RAW           0x30
-#define SYSLINK_WIFI_CHANNEL       0x31
-#define SYSLINK_WIFI_DATARATE      0x32
-#define SYSLINK_WIFI_CONTWAVE      0x33
-#define SYSLINK_WIFI_RSSI          0x34
-#define SYSLINK_WIFI_ADDRESS       0x35
-#define SYSLINK_WIFI_RAW_BROADCAST 0x36
-
 typedef struct _SyslinkPacket
 {
   uint8_t type;

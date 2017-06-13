@@ -174,7 +174,7 @@ void crtpSetLink(struct crtpLinkOperations * lk);
  * Check if the connection timeout has been reached, otherwise
  * we will assume that we are connected.
  *
- * @return true if conencted, otherwise false
+ * @return true if connected, otherwise false
  */
 bool crtpIsConnected(void);
 

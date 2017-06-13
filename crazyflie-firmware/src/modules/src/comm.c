@@ -51,10 +51,10 @@ void commInit(void)
 {
   if (isInit)
     return;
-// Add uart2 init
-uart2Init(57600);
-// Add wifi init
-wifilinkInit();
+
+  // Add uart2 init
+  uart2Init(115200);
+
 
 #ifdef PLATFORM_CF1
   #ifdef USE_ESKYLINK
@@ -66,6 +66,9 @@ wifilinkInit();
   uartslkInit();
   radiolinkInit();
 #endif
+
+  // Add wifi init
+  wifilinkInit();
 
   /* These functions are moved to be initialized early so
    * that DEBUG_PRINT can be used early */
@@ -79,8 +82,8 @@ wifilinkInit();
   crtpSetLink(eskylinkGetLink());
 #else
   crtpSetLink(nrf24linkGetLink());
-#endif
-*/
+#endif*/
+
 
   crtpSetLink(wifilinkGetLink());
 
@@ -115,7 +118,7 @@ bool commTest(void)
 #else
   pass &= radiolinkTest();
 #endif
-  
+  pass &= wifilinkTest();
   pass &= crtpTest();
   pass &= crtpserviceTest();
 #ifdef PLATFORM_CF2
