@@ -57,15 +57,16 @@ class Squadron(Plugin):
         self._widget.relativeTable.viewport().installEventFilter(self)
         self._widget.relativeTable.cellClicked.connect(self.cellClicked)
 
+    # checks if a cell is clicked
     def cellClicked(self, row, column):
         print("Row %d and Column %d was clicked" % (row, column))
-        item = self._widget.relativeTable.item(row, column)
-        self.cell = item.text()
-        print (self.cell)
+        self.cell = self._widget.relativeTable.item(row, column)
 
+    # delete the selected cell when delCell button is clicked
     def delSelectedCell(self):
-        self.cell.setText("")
+        self.cell.setText('')
 
+    # save the user-chosen parameters for the squad and save into the list of squadrons when saveConfig button is clicked
     def saveSquadConfig(self):
         self.leaderName = str(self._widget.selectLeader.currentText())
         print ('leader name: ' + self.leaderName)
@@ -102,11 +103,13 @@ class Squadron(Plugin):
                     squadItemRoot.addChild(leaderChild)
         self._widget.squadTree.addTopLevelItem(squadItemRoot)
 
+    # delete selected squadron (entire or just one item) when delSquad button is clicked
     def delSelectedSquad(self):
         root = self._widget.squadTree.invisibleRootItem()
         for item in self._widget.squadTree.selectedItems():
             (item.parent() or root).removeChild(item)
 
+    # write and save a file that contains the user-chosen squadrons to squadronPlan.txt when saveFile button is clicked
     def generateFile(self):
         fileList = []
         squadList = []
@@ -143,6 +146,7 @@ class Squadron(Plugin):
         print('written squadron file')
         squadronFile.close() 
 
+    # event filter for using mouse wheel to expand and shrink the relativeTable for visibility
     def eventFilter(self, object, event):
         if (object is self._widget.relativeTable.viewport()):
             # insert a wheel event to zoom the grid
