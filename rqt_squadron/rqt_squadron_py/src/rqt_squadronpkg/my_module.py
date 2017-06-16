@@ -172,6 +172,7 @@ class Squadron(Plugin):
                     self._widget.relativeTable.setRowHeight(0, 100)
                     self._widget.relativeTable.setColumnWidth(0, horizontalSectionSize)
                     self._widget.relativeTable.setRowHeight(0, verticalSectionSize)
+                return True
             return False # lets the event continue to the edit
         return False
 
