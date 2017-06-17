@@ -2,7 +2,9 @@ import os
 import rospkg
 import rospy
 import tf
-from geometry_msgs.msg import PoseStamped
+
+from crazyflie_driver.msg import Command, int_array, Pose2D
+from geometry_msgs.msg import Pose, PoseArray
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -50,126 +52,158 @@ class Publisher(Plugin):
         # Add widget to the user interface
         context.add_widget(self._widget)
 
-        self._widget.saveConfig.clicked.connect(self.saveSquadConfig)
-        self._widget.delSquad.clicked.connect(self.delSelectedSquad)
-        self._widget.createFile.clicked.connect(self.generateFile)   
-        self._widget.delCell.clicked.connect(self.delSelectedCell)   
-        self._widget.relativeTable.viewport().installEventFilter(self)
-        self._widget.relativeTable.cellClicked.connect(self.cellClicked)
+        # set name of topic to publish to
+        self.topicName = "/human_command"
+        # initialize ROS message
+        self.msg = Command()
+        # start commandNum as 0 and increase by 1 every time a command is called
+        self.msg.CommandNum = 0
 
-    def cellClicked(self, row, column):
-        print("Row %d and Column %d was clicked" % (row, column))
-        item = self._widget.relativeTable.item(row, column)
-        self.cell = item.text()
-        print (self.cell)
+        self._widget.publishButton1.clicked.connect(self.publishMsg1)
+        self._widget.publishButton2.clicked.connect(self.publishMsg2)           
 
-    def delSelectedCell(self):
-        self.cell.setText("")
+    # publishMsg method publishes a ROS message with user-defined parameters (upon button click):
+    # int8 CommandNum
+    # int8[] CommandType
+    # geometry_msgs/PoseArray InitPose
+    # geometry_msgs/PoseArray DirectGoal
+    # float32[] Time
+    # int_array[] Squad
+    # Pose2D[] SquadPos
+    # float32[] Gap
+    # int8[] Circle
+    # int8[] DirectGoalCommandProperties
+    # equation[] SquadEquation
+    # float32[] theta_start
+    # float32[] theta_end
+    def publishMsg1(self):
+        # for CommandType parameter
+        # INITIATE_SQUADS = 0
+        # CHANGE_SQUAD_COMMAND = 1
+        # DIRECT_GOAL_COMMAND = 2
+        # KILL_SQUAD = 3
+        # CONGO_LINE = 4
+        # STOP_CONGO = 5
+        # EQUATION = 6
+        self.msg.CommandType = [1,1]
 
-    def saveSquadConfig(self):
-        self.leaderName = str(self._widget.selectLeader.currentText())
-        print ('leader name: ' + self.leaderName)
+        # for Time parameter
+        self.msg.Time = [3.0,3.0]
 
-        rootItem = self.leaderName
-        squadItemRoot = QTreeWidgetItem([rootItem])
+        # for Gap parameter
+        # self.msg.Gap = []
 
-        model = self._widget.relativeTable.model()
-        data = []
-        for row in range(model.rowCount()):
-            data.append([])
-            for column in range(model.columnCount()):
-                index = model.index(row, column)
-                data[row].append(str(model.data(index)))
-        # print(data)
-        indexVal = [-1.0,-0.75,-0.50,-0.25,0,0.25,0.50,0.75,1.0]
-        for rowData in data:
-            for colData in rowData:
-                if colData == 'None' or colData == 'Leader':
-                    pass
-                else:
-                    self.droneName = colData
-                    print ('drone to be added to Publisher:' + colData)
-                    colIndex = rowData.index(colData)
-                    # print ('column index:' + colIndex)
-                    rowIndex = data.index(rowData)
-                    # print ('row index:' + rowIndex)
-                    self.droneX = indexVal[colIndex]
-                    self.droneY = -indexVal[rowIndex]
-                    print ('drone coordinates: ' + str(self.droneX), str(self.droneY))
+        # for Circle parameter
+        # self.msg.Circle = []
 
-                    droneItem = self.droneName+';('+str(self.droneX)+','+str(self.droneY)+',0)'
-                    leaderChild = QTreeWidgetItem([droneItem])
-                    squadItemRoot.addChild(leaderChild)
-        self._widget.squadTree.addTopLevelItem(squadItemRoot)
+        # for SquadEquation parameter
+        # self.msg.SquadEquation = []
 
-    def delSelectedSquad(self):
-        root = self._widget.squadTree.invisibleRootItem()
-        for item in self._widget.squadTree.selectedItems():
-            (item.parent() or root).removeChild(item)
+        # for theta parameters
+        # self.msg.theta_start = []
+        # self.msg.theta_end = []
 
-    def generateFile(self):
-        fileList = []
-        squadList = []
+        # for InitPose parameter
+        # self.initPoseArr = PoseArray()
+        # self.pose3 = Pose()
+        # self.pose3.position.x = 0
+        # self.pose3.position.y = 1.5
+        # self.pose3.position.z = 1.5
+        # self.dirGoalArr.poses.append(self.pose3)
+        # self.msg.InitPose = self.initPoseArr
+        # self.msg.InitPose.header.stamp = rospy.Time.now()
 
-        root = self._widget.squadTree.invisibleRootItem()
-        child_count = root.childCount()
-        for i in range(child_count):
-            entry = root.child(i)
-            leader = entry.text(0).encode("ascii")
-            ldrNum = leader[-1]
-            print ('leader: ' + str(leader))
-            squadList.append([ldrNum])
-            child_count2 = entry.childCount()
-            for j in range(child_count2):
-                otherDrone = root.child(i).child(j).text(0).encode("ascii").split(';')
-                droneCoords = otherDrone[1].split(',')
-                droneNum = otherDrone[0][-1]
-                droneX = droneCoords[0][1:]
-                droneY = droneCoords[1]
-                droneZ = droneCoords[2][:-1]
-                print ('follower: ' + str(otherDrone))
-                squadList.append([droneNum, droneX, droneY, droneZ])
-            fileList.append(squadList)
-            squadList = []
-        print fileList
+        # for Squad parameter
+        self.squad1 = int_array()
+        self.squad1.members = [0,3,4]
+        self.squad2 = int_array()
+        self.squad2.members = [1,2]
+        self.msg.Squad = [self.squad1,self.squad2]
 
-        # print os.getcwd()
-        os.chdir(os.path.expanduser('~'))
-        os.chdir('catkin_ws/src/rqt_publisher/rqt_publisher_py/src/rqt_publisherpkg') # change accordingly to the name of your catkin workspace
-        # print os.getcwd()
+        # for SquadPos parameter
+        self.pose2d_s1 = Pose2D()
+        self.squadArr1 = PoseArray()
+        self.pose4 = Pose()
+        self.pose4.position.x = 4
+        self.pose4.position.y = 1.5
+        self.pose4.position.z = 1.5
+        self.squadArr1.poses.append(self.pose4)
+        self.pose5 = Pose()
+        self.pose5.position.x = -0.5
+        self.pose5.position.y = 0.5
+        self.pose5.position.z = 0
+        self.squadArr1.poses.append(self.pose5)
+        self.pose6 = Pose()
+        self.pose6.position.x = -0.5
+        self.pose6.position.y = -0.5
+        self.pose6.position.z = 0
+        self.squadArr1.poses.append(self.pose6)
+        self.pose2d_s1.membersRelativePos = self.squadArr1
 
-        PublisherFile = open('PublisherPlan.txt','w') 
-        PublisherFile.write(str(fileList))
-        print('written Publisher file')
-        PublisherFile.close() 
+        self.pose2d_s2 = Pose2D()
+        self.squadArr2 = PoseArray()
+        self.pose7 = Pose()
+        self.pose7.position.x = 2
+        self.pose7.position.y = 1.5
+        self.pose7.position.z = 1.5
+        self.squadArr2.poses.append(self.pose7)
+        self.pose8 = Pose()
+        self.pose8.position.x = -1
+        self.pose8.position.y = -1
+        self.pose8.position.z = 0
+        self.squadArr2.poses.append(self.pose8)
+        self.pose2d_s2.membersRelativePos = self.squadArr2
 
-    def eventFilter(self, object, event):
-        if (object is self._widget.relativeTable.viewport()):
-            # insert a wheel event to zoom the grid
-            if (event.type() == QtCore.QEvent.Wheel):
-                horizontalSectionSize = self._widget.relativeTable.horizontalHeader().defaultSectionSize()
-                verticalSectionSize = self._widget.relativeTable.verticalHeader().defaultSectionSize()
-                if event.delta() > 0:
-                    horizontalSectionSize += 6
-                    verticalSectionSize += 2
-                    self._widget.relativeTable.horizontalHeader().setDefaultSectionSize(horizontalSectionSize)
-                    self._widget.relativeTable.verticalHeader().setDefaultSectionSize(verticalSectionSize)
-                    self._widget.relativeTable.setColumnWidth(0, 100)
-                    self._widget.relativeTable.setRowHeight(0, 100)
-                    self._widget.relativeTable.setColumnWidth(0, horizontalSectionSize)
-                    self._widget.relativeTable.setRowHeight(0, verticalSectionSize)
-                    
-                if event.delta() < 0 and verticalSectionSize > 3:
-                    horizontalSectionSize -= 6
-                    verticalSectionSize -= 2
-                    self._widget.relativeTable.horizontalHeader().setDefaultSectionSize(horizontalSectionSize)
-                    self._widget.relativeTable.verticalHeader().setDefaultSectionSize(verticalSectionSize)
-                    self._widget.relativeTable.setColumnWidth(0, 100)
-                    self._widget.relativeTable.setRowHeight(0, 100)
-                    self._widget.relativeTable.setColumnWidth(0, horizontalSectionSize)
-                    self._widget.relativeTable.setRowHeight(0, verticalSectionSize)
-            return False # lets the event continue to the edit
-        return False
+        self.msg.SquadPos = [self.pose2d_s1,self.pose2d_s2]
+
+        # initialize publisher and publish configured message
+        pub = rospy.Publisher(self.topicName, Command, queue_size=1)
+        pub.publish(self.msg)
+
+        self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
+
+        print 'published squad change message!'
+
+    def publishMsg2(self):
+        # for CommandType parameter
+        # INITIATE_SQUADS = 0
+        # CHANGE_SQUAD_COMMAND = 1
+        # DIRECT_GOAL_COMMAND = 2
+        # KILL_SQUAD = 3
+        # CONGO_LINE = 4
+        # STOP_CONGO = 5
+        # EQUATION = 6
+        self.msg.CommandType = [2,2]
+
+        # for Time parameter
+        self.msg.Time = [5.0,8.0]
+
+        # for DirectGoal parameter
+        self.dirGoalArr = PoseArray()
+        self.pose1 = Pose()
+        self.pose1.position.x = 3
+        self.pose1.position.y = 1.5
+        self.pose1.position.z = 1.5
+        self.dirGoalArr.poses.append(self.pose1)
+        self.pose2 = Pose()
+        self.pose2.position.x = 5
+        self.pose2.position.y = 1.5
+        self.pose2.position.z = 1.5
+        self.dirGoalArr.poses.append(self.pose2)
+
+        self.msg.DirectGoal = self.dirGoalArr
+        self.msg.DirectGoal.header.stamp = rospy.Time.now()
+
+        # for DirectGoalCommandProperties parameter
+        self.msg.DirectGoalCommandProperties = [0,0] # unused for now, but need to set to avoid out-of-index error in squadron_controller.py
+
+        # initialize publisher and publish configured message
+        pub = rospy.Publisher(self.topicName, Command, queue_size=1)
+        pub.publish(self.msg)
+
+        self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
+
+        print 'published send direct goal message!'
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here
