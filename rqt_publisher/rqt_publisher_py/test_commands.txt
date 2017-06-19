@@ -33,6 +33,6 @@ DirectGoal:
 
 DirectGoalCommandProperties: [0,0]
     
-Time: [5,8]"
+Time: [5,5]"
 
 ##########################################################

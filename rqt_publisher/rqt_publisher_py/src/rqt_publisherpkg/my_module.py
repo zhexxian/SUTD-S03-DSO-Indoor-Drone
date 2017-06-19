@@ -65,6 +65,7 @@ class Publisher(Plugin):
     # publishMsg method publishes a ROS message with user-defined parameters (upon button click):
     # int8 CommandNum
     # int8[] CommandType
+    # int8 SimulationType
     # geometry_msgs/PoseArray InitPose
     # geometry_msgs/PoseArray DirectGoal
     # float32[] Time
@@ -73,6 +74,7 @@ class Publisher(Plugin):
     # float32[] Gap
     # int8[] Circle
     # int8[] DirectGoalCommandProperties
+    # float32[] RotationRate
     # equation[] SquadEquation
     # float32[] theta_start
     # float32[] theta_end
@@ -85,10 +87,15 @@ class Publisher(Plugin):
         # CONGO_LINE = 4
         # STOP_CONGO = 5
         # EQUATION = 6
+        # RESET_SIMULATION = 7
+        # RUN_SIMULATION = 8
         self.msg.CommandType = [1,1]
 
         # for Time parameter
         self.msg.Time = [3.0,3.0]
+
+        # for SimulationType parameter
+        self.msg.SimulationType = 1
 
         # for Gap parameter
         # self.msg.Gap = []
@@ -173,10 +180,15 @@ class Publisher(Plugin):
         # CONGO_LINE = 4
         # STOP_CONGO = 5
         # EQUATION = 6
+        # RESET_SIMULATION = 7
+        # RUN_SIMULATION = 8
         self.msg.CommandType = [2,2]
 
         # for Time parameter
-        self.msg.Time = [5.0,8.0]
+        self.msg.Time = [5.0,5.0]
+
+        # for SimulationType parameter
+        self.msg.SimulationType = 2
 
         # for DirectGoal parameter
         self.dirGoalArr = PoseArray()
@@ -195,7 +207,10 @@ class Publisher(Plugin):
         self.msg.DirectGoal.header.stamp = rospy.Time.now()
 
         # for DirectGoalCommandProperties parameter
-        self.msg.DirectGoalCommandProperties = [0,0] # unused for now, but need to set to avoid out-of-index error in squadron_controller.py
+        self.msg.DirectGoalCommandProperties = [3,3]
+
+        # for RotationRate parameter
+        self.msg.RotationRate = [0,0]
 
         # initialize publisher and publish configured message
         pub = rospy.Publisher(self.topicName, Command, queue_size=1)
