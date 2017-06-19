@@ -17,14 +17,56 @@
    <item>
     <widget class="QPushButton" name="publishButton1">
      <property name="text">
-      <string>Change Squad</string>
+      <string>Command 1</string>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QPushButton" name="publishButton2">
      <property name="text">
-      <string>Send Direct Goals</string>
+      <string>Command 2</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton3">
+     <property name="text">
+      <string>Command 3</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton4">
+     <property name="text">
+      <string>Command 4</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton5">
+     <property name="text">
+      <string>Command 5</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton6">
+     <property name="text">
+      <string>Command 6</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton7">
+     <property name="text">
+      <string>Command 7</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton8">
+     <property name="text">
+      <string>Command 8</string>
      </property>
     </widget>
    </item>

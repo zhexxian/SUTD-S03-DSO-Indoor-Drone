@@ -3,7 +3,7 @@ import rospkg
 import rospy
 import tf
 
-from crazyflie_driver.msg import Command, int_array, Pose2D
+from crazyflie_driver.msg import Command, int_array, Pose2D, equation, equation_array
 from geometry_msgs.msg import Pose, PoseArray
 
 from qt_gui.plugin import Plugin
@@ -60,7 +60,13 @@ class Publisher(Plugin):
         self.msg.CommandNum = 0
 
         self._widget.publishButton1.clicked.connect(self.publishMsg1)
-        self._widget.publishButton2.clicked.connect(self.publishMsg2)           
+        self._widget.publishButton2.clicked.connect(self.publishMsg2)
+        self._widget.publishButton3.clicked.connect(self.publishMsg3)
+        self._widget.publishButton4.clicked.connect(self.publishMsg4)
+        self._widget.publishButton5.clicked.connect(self.publishMsg5)
+        self._widget.publishButton6.clicked.connect(self.publishMsg6)
+        self._widget.publishButton7.clicked.connect(self.publishMsg7)
+        self._widget.publishButton8.clicked.connect(self.publishMsg8)           
 
     # publishMsg method publishes a ROS message with user-defined parameters (upon button click):
     # int8 CommandNum
@@ -89,26 +95,138 @@ class Publisher(Plugin):
         # EQUATION = 6
         # RESET_SIMULATION = 7
         # RUN_SIMULATION = 8
-        self.msg.CommandType = [1,1]
+        self.msg.CommandType = [2,2,2,2]
 
         # for Time parameter
-        self.msg.Time = [3.0,3.0]
+        self.msg.Time = [1.5,1.5,1.5,1.5]
 
         # for SimulationType parameter
         self.msg.SimulationType = 1
 
-        # for Gap parameter
-        # self.msg.Gap = []
+        # for DirectGoal parameter
+        self.dirGoalArr = PoseArray()
+        self.pose1 = Pose()
+        self.pose1.position.x = 2.5
+        self.pose1.position.y = 1.45
+        self.pose1.position.z = 1.5
+        self.dirGoalArr.poses.append(self.pose1)
+        self.pose2 = Pose()
+        self.pose2.position.x = 3.5
+        self.pose2.position.y = 1.45
+        self.pose2.position.z = 1.5
+        self.dirGoalArr.poses.append(self.pose2)
+        self.pose3 = Pose()
+        self.pose3.position.x = 2
+        self.pose3.position.y = 2.316
+        self.pose3.position.z = 1.5
+        self.dirGoalArr.poses.append(self.pose3)
+        self.pose4 = Pose()
+        self.pose4.position.x = 2
+        self.pose4.position.y = 0.584
+        self.pose4.position.z = 1.5
+        self.dirGoalArr.poses.append(self.pose4)
 
-        # for Circle parameter
-        # self.msg.Circle = []
+        self.msg.DirectGoal = self.dirGoalArr
+        self.msg.DirectGoal.header.stamp = rospy.Time.now()
+
+        # for DirectGoalCommandProperties parameter
+        self.msg.DirectGoalCommandProperties = [0,0,0,0]
+
+        # for RotationRate parameter
+        self.msg.RotationRate = [0,0,0,0]
+
+        # initialize publisher and publish configured message
+        pub = rospy.Publisher(self.topicName, Command, queue_size=1)
+        pub.publish(self.msg)
+
+        self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
+
+        print 'published command 1 - send direct goal'
+
+    def publishMsg2(self):
+        # for CommandType parameter
+        self.msg.CommandType = [2,6,6,6]
+
+        # for Time parameter
+        self.msg.Time = [15,15,15,15]
+
+        # for SimulationType parameter
+        self.msg.SimulationType = 2
+
+        # for DirectGoal parameter
+        self.dirGoalArr = PoseArray()
+        self.pose1 = Pose()
+        self.pose1.position.x = 2.5
+        self.pose1.position.y = 1.45
+        self.pose1.position.z = 1.5
+        self.dirGoalArr.poses.append(self.pose1)
+        self.pose2 = Pose()
+        self.pose2.position.x = 3.5
+        self.pose2.position.y = 1.45
+        self.pose2.position.z = 1.5
+        self.dirGoalArr.poses.append(self.pose2)
+        self.pose3 = Pose()
+        self.pose3.position.x = 2
+        self.pose3.position.y = 2.316
+        self.pose3.position.z = 1.5
+        self.dirGoalArr.poses.append(self.pose3)
+        self.pose4 = Pose()
+        self.pose4.position.x = 2
+        self.pose4.position.y = 0.584
+        self.pose4.position.z = 1.5
+        self.dirGoalArr.poses.append(self.pose4)
+
+        self.msg.DirectGoal = self.dirGoalArr
+        self.msg.DirectGoal.header.stamp = rospy.Time.now()
+
+        # for DirectGoalCommandProperties parameter
+        self.msg.DirectGoalCommandProperties = [0,0,0,0]
+
+        # for RotationRate parameter
+        self.msg.RotationRate = [0,0,0,0]
 
         # for SquadEquation parameter
-        # self.msg.SquadEquation = []
+        self.eqn1 = equation()
+        self.eqn1x = equation_array()
+        self.eqn1x.finalpoint, self.eqn1x.offset, self.eqn1x.sine, self.eqn1x.cosine, self.eqn1x.finalcosine, self.eqn1x.sine = 2.5,2.5,0,1,1,0
+        self.eqn1y = equation_array()
+        self.eqn1y.finalpoint, self.eqn1y.offset, self.eqn1y.sine, self.eqn1y.cosine, self.eqn1y.finalcosine, self.eqn1y.sine = 1.45,1.45,1,0,0,1
+        self.eqn1z = equation_array()
+        self.eqn1z.finalpoint, self.eqn1z.offset, self.eqn1z.sine, self.eqn1z.cosine, self.eqn1z.finalcosine, self.eqn1z.sine = 1.5,1.5,0,0,0,0
+
+        self.eqn2 = equation()
+        self.eqn2x = equation_array()
+        self.eqn2x.finalpoint, self.eqn2x.offset, self.eqn2x.sine, self.eqn2x.cosine, self.eqn2x.finalcosine, self.eqn2x.sine = 2.5,2.5,0,1,1,0
+        self.eqn2y = equation_array()
+        self.eqn2y.finalpoint, self.eqn2y.offset, self.eqn2y.sine, self.eqn2y.cosine, self.eqn2y.finalcosine, self.eqn2y.sine = 1.45,1.45,1,0,0,1
+        self.eqn2z = equation_array()
+        self.eqn2z.finalpoint, self.eqn2z.offset, self.eqn2z.sine, self.eqn2z.cosine, self.eqn2z.finalcosine, self.eqn2z.sine = 1.5,1.5,0,0,0,0
+
+        self.eqn3 = equation()
+        self.eqn3x = equation_array()
+        self.eqn3x.finalpoint, self.eqn3x.offset, self.eqn3x.sine, self.eqn3x.cosine, self.eqn3x.finalcosine, self.eqn3x.sine = 2.5,2.5,0,1,1,0
+        self.eqn3y = equation_array()
+        self.eqn3y.finalpoint, self.eqn3y.offset, self.eqn3y.sine, self.eqn3y.cosine, self.eqn3y.finalcosine, self.eqn3y.sine = 1.45,1.45,1,0,0,1
+        self.eqn3z = equation_array()
+        self.eqn3z.finalpoint, self.eqn3z.offset, self.eqn3z.sine, self.eqn3z.cosine, self.eqn3z.finalcosine, self.eqn3z.sine = 1.5,1.5,0,0,0,0
+
+        self.eqn4 = equation()
+        self.eqn4x = equation_array()
+        self.eqn4x.finalpoint, self.eqn4x.offset, self.eqn4x.sine, self.eqn4x.cosine, self.eqn4x.finalcosine, self.eqn4x.sine = 2.5,2.5,0,1,1,0
+        self.eqn4y = equation_array()
+        self.eqn4y.finalpoint, self.eqn4y.offset, self.eqn4y.sine, self.eqn4y.cosine, self.eqn4y.finalcosine, self.eqn4y.sine = 1.45,1.45,1,0,0,1
+        self.eqn4z = equation_array()
+        self.eqn4z.finalpoint, self.eqn4z.offset, self.eqn4z.sine, self.eqn4z.cosine, self.eqn4z.finalcosine, self.eqn4z.sine = 1.5,1.5,0,0,0,0
+        
+        self.eqn1.x, self.eqn1.y, self.eqn1.z = self.eqn1x, self.eqn1y, self.eqn1z
+        self.eqn2.x, self.eqn2.y, self.eqn2.z = self.eqn2x, self.eqn2y, self.eqn2z
+        self.eqn3.x, self.eqn3.y, self.eqn3.z = self.eqn3x, self.eqn3y, self.eqn3z
+        self.eqn4.x, self.eqn4.y, self.eqn4.z = self.eqn4x, self.eqn4y, self.eqn4z
+        self.msg.SquadEquation = [self.eqn1, self.eqn2, self.eqn3, self.eqn4]
 
         # for theta parameters
-        # self.msg.theta_start = []
-        # self.msg.theta_end = []
+        self.msg.theta_start = [0,0,120,240]
+        self.msg.theta_end = [0,720,840,960]
 
         # for InitPose parameter
         # self.initPoseArr = PoseArray()
@@ -120,48 +238,55 @@ class Publisher(Plugin):
         # self.msg.InitPose = self.initPoseArr
         # self.msg.InitPose.header.stamp = rospy.Time.now()
 
+        # initialize publisher and publish configured message
+        pub = rospy.Publisher(self.topicName, Command, queue_size=1)
+        pub.publish(self.msg)
+
+        self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
+
+        print 'published comamand 2 - equation'
+
+    def publishMsg3(self):
+        # for CommandType parameter
+        self.msg.CommandType = [1]
+
+        # for Time parameter
+        self.msg.Time = [3]
+
+        # for SimulationType parameter
+        self.msg.SimulationType = 2
+
         # for Squad parameter
         self.squad1 = int_array()
-        self.squad1.members = [0,3,4]
-        self.squad2 = int_array()
-        self.squad2.members = [1,2]
-        self.msg.Squad = [self.squad1,self.squad2]
+        self.squad1.members = [0,1,2,3]
+        self.msg.Squad = [self.squad1]
 
         # for SquadPos parameter
         self.pose2d_s1 = Pose2D()
         self.squadArr1 = PoseArray()
+        self.pose1 = Pose()
+        self.pose1.position.x = 2.5
+        self.pose1.position.y = 1.45
+        self.pose1.position.z = 1.5
+        self.squadArr1.poses.append(self.pose1)
+        self.pose2 = Pose()
+        self.pose2.position.x = 1
+        self.pose2.position.y = 0
+        self.pose2.position.z = 0
+        self.squadArr1.poses.append(self.pose2)
+        self.pose3 = Pose()
+        self.pose3.position.x = -0.5
+        self.pose3.position.y = 0.866
+        self.pose3.position.z = 0
+        self.squadArr1.poses.append(self.pose3)
         self.pose4 = Pose()
-        self.pose4.position.x = 4
-        self.pose4.position.y = 1.5
-        self.pose4.position.z = 1.5
+        self.pose4.position.x = -0.5
+        self.pose4.position.y = -0.866
+        self.pose4.position.z = 0
         self.squadArr1.poses.append(self.pose4)
-        self.pose5 = Pose()
-        self.pose5.position.x = -0.5
-        self.pose5.position.y = 0.5
-        self.pose5.position.z = 0
-        self.squadArr1.poses.append(self.pose5)
-        self.pose6 = Pose()
-        self.pose6.position.x = -0.5
-        self.pose6.position.y = -0.5
-        self.pose6.position.z = 0
-        self.squadArr1.poses.append(self.pose6)
         self.pose2d_s1.membersRelativePos = self.squadArr1
 
-        self.pose2d_s2 = Pose2D()
-        self.squadArr2 = PoseArray()
-        self.pose7 = Pose()
-        self.pose7.position.x = 2
-        self.pose7.position.y = 1.5
-        self.pose7.position.z = 1.5
-        self.squadArr2.poses.append(self.pose7)
-        self.pose8 = Pose()
-        self.pose8.position.x = -1
-        self.pose8.position.y = -1
-        self.pose8.position.z = 0
-        self.squadArr2.poses.append(self.pose8)
-        self.pose2d_s2.membersRelativePos = self.squadArr2
-
-        self.msg.SquadPos = [self.pose2d_s1,self.pose2d_s2]
+        self.msg.SquadPos = [self.pose2d_s1]
 
         # initialize publisher and publish configured message
         pub = rospy.Publisher(self.topicName, Command, queue_size=1)
@@ -169,23 +294,14 @@ class Publisher(Plugin):
 
         self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
 
-        print 'published squad change message!'
+        print 'published comamand 3 - squad change'
 
-    def publishMsg2(self):
+    def publishMsg4(self):
         # for CommandType parameter
-        # INITIATE_SQUADS = 0
-        # CHANGE_SQUAD_COMMAND = 1
-        # DIRECT_GOAL_COMMAND = 2
-        # KILL_SQUAD = 3
-        # CONGO_LINE = 4
-        # STOP_CONGO = 5
-        # EQUATION = 6
-        # RESET_SIMULATION = 7
-        # RUN_SIMULATION = 8
-        self.msg.CommandType = [2,2]
+        self.msg.CommandType = [2]
 
         # for Time parameter
-        self.msg.Time = [5.0,5.0]
+        self.msg.Time = [8]
 
         # for SimulationType parameter
         self.msg.SimulationType = 2
@@ -193,24 +309,19 @@ class Publisher(Plugin):
         # for DirectGoal parameter
         self.dirGoalArr = PoseArray()
         self.pose1 = Pose()
-        self.pose1.position.x = 3
-        self.pose1.position.y = 1.5
+        self.pose1.position.x = 5
+        self.pose1.position.y = 2
         self.pose1.position.z = 1.5
         self.dirGoalArr.poses.append(self.pose1)
-        self.pose2 = Pose()
-        self.pose2.position.x = 5
-        self.pose2.position.y = 1.5
-        self.pose2.position.z = 1.5
-        self.dirGoalArr.poses.append(self.pose2)
 
         self.msg.DirectGoal = self.dirGoalArr
         self.msg.DirectGoal.header.stamp = rospy.Time.now()
 
         # for DirectGoalCommandProperties parameter
-        self.msg.DirectGoalCommandProperties = [3,3]
+        self.msg.DirectGoalCommandProperties = [3]
 
         # for RotationRate parameter
-        self.msg.RotationRate = [0,0]
+        self.msg.RotationRate = [3]
 
         # initialize publisher and publish configured message
         pub = rospy.Publisher(self.topicName, Command, queue_size=1)
@@ -218,7 +329,116 @@ class Publisher(Plugin):
 
         self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
 
-        print 'published send direct goal message!'
+        print 'published command 4 - send direct goal'
+
+    def publishMsg5(self):
+        # for CommandType parameter
+        self.msg.CommandType = [2]
+
+        # for Time parameter
+        self.msg.Time = [2]
+
+        # for SimulationType parameter
+        self.msg.SimulationType = 2
+
+        # for DirectGoal parameter
+        self.dirGoalArr = PoseArray()
+        self.pose1 = Pose()
+        self.pose1.position.x = 6
+        self.pose1.position.y = 2
+        self.pose1.position.z = 1.5
+        self.dirGoalArr.poses.append(self.pose1)
+
+        self.msg.DirectGoal = self.dirGoalArr
+        self.msg.DirectGoal.header.stamp = rospy.Time.now()
+
+        # for DirectGoalCommandProperties parameter
+        self.msg.DirectGoalCommandProperties = [3]
+
+        # for RotationRate parameter
+        self.msg.RotationRate = [3]
+
+        # initialize publisher and publish configured message
+        pub = rospy.Publisher(self.topicName, Command, queue_size=1)
+        pub.publish(self.msg)
+
+        self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
+
+        print 'published command 5 - send direct goal'
+
+
+    def publishMsg6(self):
+        # for CommandType parameter
+        self.msg.CommandType = [6]
+
+        # for Time parameter
+        self.msg.Time = [20]
+
+        # for SimulationType parameter
+        self.msg.SimulationType = 2
+
+        # for DirectGoalCommandProperties parameter
+        self.msg.DirectGoalCommandProperties = [3]
+
+        # for RotationRate parameter
+        self.msg.RotationRate = [5]
+
+        # for SquadEquation parameter
+        self.eqn1 = equation()
+        self.eqn1x = equation_array()
+        self.eqn1x.finalpoint, self.eqn1x.offset, self.eqn1x.sine, self.eqn1x.cosine, self.eqn1x.finalcosine, self.eqn1x.sine = 1,5,0,0,0,0
+        self.eqn1y = equation_array()
+        self.eqn1y.finalpoint, self.eqn1y.offset, self.eqn1y.sine, self.eqn1y.cosine, self.eqn1y.finalcosine, self.eqn1y.sine = 1.25,1.5,0,0.75,0.75,0
+        self.eqn1z = equation_array()
+        self.eqn1z.finalpoint, self.eqn1z.offset, self.eqn1z.sine, self.eqn1z.cosine, self.eqn1z.finalcosine, self.eqn1z.sine = 1.25,1.25,0.75,0,0,0.75
+        
+        self.eqn1.x, self.eqn1.y, self.eqn1.z = self.eqn1x, self.eqn1y, self.eqn1z
+        self.msg.SquadEquation = [self.eqn1]
+
+        # for theta parameters
+        self.msg.theta_start = [0]
+        self.msg.theta_end = [1080]
+
+        # initialize publisher and publish configured message
+        pub = rospy.Publisher(self.topicName, Command, queue_size=1)
+        pub.publish(self.msg)
+
+        self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
+
+        print 'published comamand 6 - equation'
+
+    def publishMsg7(self):
+        # for CommandType parameter
+        self.msg.CommandType = [7]
+
+        # for Time parameter
+        self.msg.Time = [5]
+
+        # for SimulationType parameter
+        self.msg.SimulationType = 0
+
+        # initialize publisher and publish configured message
+        pub = rospy.Publisher(self.topicName, Command, queue_size=1)
+        pub.publish(self.msg)
+
+        self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
+
+        print 'published command 7 - reset simulation'
+
+    def publishMsg8(self):
+        # for CommandType parameter
+        self.msg.CommandType = [8]
+
+        # for SimulationType parameter
+        self.msg.SimulationType = 0
+
+        # initialize publisher and publish configured message
+        pub = rospy.Publisher(self.topicName, Command, queue_size=1)
+        pub.publish(self.msg)
+
+        self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
+
+        print 'published command 8 - run simulation'
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here
