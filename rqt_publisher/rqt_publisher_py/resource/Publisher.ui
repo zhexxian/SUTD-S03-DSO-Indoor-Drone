@@ -6,14 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1023</width>
-    <height>695</height>
+    <width>312</width>
+    <height>441</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Publisher</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="commandDesc">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QPushButton" name="publishButton1">
      <property name="text">

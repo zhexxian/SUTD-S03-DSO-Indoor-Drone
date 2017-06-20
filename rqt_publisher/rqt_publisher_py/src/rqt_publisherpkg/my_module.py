@@ -141,6 +141,7 @@ class Publisher(Plugin):
 
         self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
 
+        self._widget.commandDesc.setText('published command 1 - send direct goal (command type 2)')
         print 'published command 1 - send direct goal'
 
     def publishMsg2(self):
@@ -243,8 +244,8 @@ class Publisher(Plugin):
         pub.publish(self.msg)
 
         self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
-
-        print 'published comamand 2 - equation'
+        self._widget.commandDesc.setText('published command 2 - send direct goal and equation (command types 2 and 6)')
+        print 'published command 2 - equation'
 
     def publishMsg3(self):
         # for CommandType parameter
@@ -294,7 +295,8 @@ class Publisher(Plugin):
 
         self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
 
-        print 'published comamand 3 - squad change'
+        self._widget.commandDesc.setText('published command 3 - squad change (command type 1)')
+        print 'published command 3 - squad change'
 
     def publishMsg4(self):
         # for CommandType parameter
@@ -329,6 +331,7 @@ class Publisher(Plugin):
 
         self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
 
+        self._widget.commandDesc.setText('published command 4 - send direct goal (command type 2)')
         print 'published command 4 - send direct goal'
 
     def publishMsg5(self):
@@ -364,6 +367,7 @@ class Publisher(Plugin):
 
         self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
 
+        self._widget.commandDesc.setText('published command 5 - send direct goal (command type 2)')
         print 'published command 5 - send direct goal'
 
 
@@ -405,7 +409,8 @@ class Publisher(Plugin):
 
         self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
 
-        print 'published comamand 6 - equation'
+        self._widget.commandDesc.setText('published command 6 - equation (command type 6)')
+        print 'published command 6 - equation'
 
     def publishMsg7(self):
         # for CommandType parameter
@@ -423,6 +428,7 @@ class Publisher(Plugin):
 
         self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
 
+        self._widget.commandDesc.setText('published command 7 - reset simulation (command type 7)')
         print 'published command 7 - reset simulation'
 
     def publishMsg8(self):
@@ -438,6 +444,7 @@ class Publisher(Plugin):
 
         self.msg.CommandNum += 1 # increase commandNum to keep track of commands and to debug duplicate commands if any
 
+        self._widget.commandDesc.setText('published command 8 - run simulation (command type 8)')
         print 'published command 8 - run simulation'
 
     def shutdown_plugin(self):
