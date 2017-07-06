@@ -1,0 +1,38 @@
+##################test command 1##########################
+
+rostopic pub /human_command crazyflie_driver/Command "CommandNum: 3
+CommandType: [1,1]
+Squad: 
+ - members: [0,3,4]
+ - members: [1,2]
+
+SquadPos:
+ - membersRelativePos:
+    poses:
+     - position: {x: 4, y: 1.5, z: 1.5}
+     - position: {x: -0.5, y: 0.5, z: 0}
+     - position: {x: -0.5, y: -0.5, z: 0}
+ - membersRelativePos:
+    poses:
+     - position: {x: 2, y: 1.5, z: 1.5}
+     - position: {x: -1, y: -1, z: 0}
+	
+Time: [3,3]"
+
+##########################################################
+
+##################test command 2##########################
+
+rostopic pub /human_command crazyflie_driver/Command "CommandNum: 3
+CommandType: [2,2]
+
+DirectGoal:
+    poses:
+     - position: {x: 3, y: 1.5, z: 1.5}
+     - position: {x: 5, y: 1.5, z: 1.5}
+
+DirectGoalCommandProperties: [0,0]
+    
+Time: [5,5]"
+
+##########################################################

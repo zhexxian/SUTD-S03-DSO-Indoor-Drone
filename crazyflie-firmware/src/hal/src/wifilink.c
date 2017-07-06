@@ -38,8 +38,13 @@
 #define CRTP_START_BYTE 0xAA
 #define CCR_ENABLE_SET  ((uint32_t)0x00000001)
 
+static xSemaphoreHandle waitUntilSendDone;
 static xQueueHandle crtpPacketDelivery;
 static uint8_t sendBuffer[64];
+static uint8_t dataIndex;
+static uint8_t dataSize;
+static uint8_t crcIndex = 0;
+static enum { notSentSecondStart, sentSecondStart} txState;
 
 static bool isInit;
 
@@ -47,9 +52,9 @@ static int wifilinkSendCRTPPacket(CRTPPacket *p);
 static int wifilinkSetEnable(bool enable);
 static int wifilinkReceiveCRTPPacket(CRTPPacket *p);
 
-static xQueueHandle uartDataDelivery;
+//static xQueueHandle uartDataDelivery;
 
-void uartRxTask(void *param);
+void uartWiFiRxTask(void *param);
 
 static struct crtpLinkOperations wifilinkOp =
 {
@@ -63,16 +68,18 @@ void wifilinkInit(void)
   if (isInit)
     return;
 
-  xTaskCreate(uartRxTask, UART_RX_TASK_NAME,
-              UART_RX_TASK_STACKSIZE, NULL, 5, NULL);
+  vSemaphoreCreateBinary(waitUntilSendDone);
+
+  xTaskCreate(uartWiFiRxTask, UART_WIFI_RX_TASK_NAME,
+              UART_WIFI_RX_TASK_STACKSIZE, NULL, UART_WIFI_RX_TASK_PRI, NULL);
 
   crtpPacketDelivery = xQueueCreate(5, sizeof(CRTPPacket));
-  uartDataDelivery = xQueueCreate(1024, sizeof(uint8_t));
+  //uartDataDelivery = xQueueCreate(1024, sizeof(uint8_t));
 
   isInit = true;
 }
 
-void uartRxTask(void *param)
+void uartWiFiRxTask(void *param)
 {
   enum {waitForFirstStart, waitForSecondStart,
         waitForPort, waitForSize, waitForData, waitForCRC } rxState;
@@ -85,7 +92,7 @@ void uartRxTask(void *param)
   uint8_t counter = 0;
   while(1)
   {
-    if (xQueueReceive(uartDataDelivery, &c, UART_DATA_TIMEOUT_TICKS) == pdTRUE)
+    if (uart2GetDataWithTimout(&c))
     {
       counter++;
      /* if (counter > 4)
@@ -157,27 +164,32 @@ static int wifilinkReceiveCRTPPacket(CRTPPacket *p)
 
 static int wifilinkSendCRTPPacket(CRTPPacket *p)
 {
-  int dataSize;
+  uint8_t cksum = 0;
 
-  ASSERT(p->size < SYSLINK_MTU);
+  sendBuffer[0] = CRTP_START_BYTE;
+  sendBuffer[1] = CRTP_START_BYTE;
+  sendBuffer[2] = p->header;
+  sendBuffer[3] = p->size;
+  memcpy(&sendBuffer[4], p->data, p->size);
+  dataIndex = 1;
+  txState = notSentSecondStart;
+  dataSize = p->size + 5;
+  crcIndex = dataSize - 1;
 
-  sendBuffer[0] = p->header;
-
-  if (p->size <= CRTP_MAX_DATA_SIZE)
+  cksum = (cksum + p->header) % 0xFF;
+  cksum = (cksum + p->size) % 0xFF;
+  for(uint8_t i=0;i<p->size;i++)
   {
-    memcpy(&sendBuffer[1], p->data, p->size);
+	  cksum = (cksum + p->data[i]) % 0xFF;
   }
 
-  dataSize = p->size + 1;
+  sendBuffer[crcIndex] = cksum;
 
 
   ledseqRun(LINK_DOWN_LED, seq_linkup);
-
-
   uart2SendData(dataSize, sendBuffer);
 
-  return 0;    
-  
+  return 1;
 }
 
 
@@ -196,4 +208,3 @@ struct crtpLinkOperations * wifilinkGetLink()
 {
   return &wifilinkOp;
 }
-

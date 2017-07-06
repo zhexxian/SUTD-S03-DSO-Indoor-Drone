@@ -1,0 +1,20 @@
+<library path="src">
+  <class name="My Plugin" type="rqt_publisherpkg.my_module.Publisher" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      Preview and Set Publisher.
+    </description>
+    <qtgui>
+      <!-- optional grouping...
+      <group>
+        <label>Group</label>
+      </group>
+      <group>
+        <label>Subgroup</label>
+      </group>
+      -->
+      <label>Publisher</label>
+      <icon type="theme">system-help</icon>
+      <statustip>View parameters for drones.</statustip>
+    </qtgui>
+  </class>
+</library>

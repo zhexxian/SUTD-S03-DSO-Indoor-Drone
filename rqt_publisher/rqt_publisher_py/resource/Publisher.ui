@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>312</width>
+    <height>441</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Publisher</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="commandDesc">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton1">
+     <property name="text">
+      <string>Command 1</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton2">
+     <property name="text">
+      <string>Command 2</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton3">
+     <property name="text">
+      <string>Command 3</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton4">
+     <property name="text">
+      <string>Command 4</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton5">
+     <property name="text">
+      <string>Command 5</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton6">
+     <property name="text">
+      <string>Command 6</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton7">
+     <property name="text">
+      <string>Command 7</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="publishButton8">
+     <property name="text">
+      <string>Command 8</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
